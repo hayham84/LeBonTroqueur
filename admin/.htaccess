@@ -1,0 +1,36 @@
+RewriteEngine On
+RewriteBase /~uapv2401255/admin/
+Options -Indexes
+
+
+# Redirection externe (URL vers contrôle)
+
+# Cas 1 : URL avec deux paramètres via control (exemple : admin/control/PageAnnonce.php?id=28&idUser=4)
+RewriteCond %{THE_REQUEST} \s/admin/control/([^?]+)\.php\?id=([^&]+)&idUser=([^?\s]+) [NC]
+RewriteRule ^control/([^.]+)\.php$ %1/%2/%3 [R=301,L]
+
+# Cas 2 : URL avec un seul paramètre via control (exemple : admin/control/accesProfile.php?id=4)
+RewriteCond %{THE_REQUEST} \s/admin/control/([^?]+)\.php\?id=([^?\s]+) [NC]
+RewriteRule ^control/([^.]+)\.php$ %1/%2 [R=301,L]
+
+# Cas 3 : URL sans "control" mais avec query string (exemple : admin/accesProfile?id=4)
+RewriteCond %{THE_REQUEST} \s/admin/([^?]+)\?id=([^&\s]+) [NC]
+RewriteRule ^([^/]+)$ %1/%2 [R=301,L]
+
+
+# Réécriture interne (URL propre vers fichiers PHP)
+
+# Cas 1 : Pour URL avec deux paramètres (exemple : admin/PageAnnonce/28/4)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ control/$1.php?id=$2&idUser=$3 [L,QSA]
+
+# Cas 2 : Pour URL avec un seul paramètre (exemple : admin/accesProfile/4)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/([^/]+)/?$ control/$1.php?id=$2 [L,QSA]
+
+# Cas 3 : Pour URL sans paramètre (exemple : admin/PageSansParam)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ control/$1.php [L,QSA]

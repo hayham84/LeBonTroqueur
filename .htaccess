@@ -1,0 +1,28 @@
+RewriteEngine On
+RewriteBase /~uapv2401251/
+Options -Indexes
+
+# 1. Redirection externe : si quelqu'un demande control/nom.php, redirige vers /nom
+RewriteCond %{THE_REQUEST} \s/control/([^?]+)\.php[?\s] [NC]
+RewriteRule ^control/([^.]+)\.php$ /$1 [R=301,L]
+
+# 2. Redirection externe pour transformer /nom?id=x en /nom/x
+RewriteCond %{THE_REQUEST} \s/([^?]+)\?id=([^&\s]+) [NC]
+RewriteRule ^ %1/%2? [R=301,L]
+
+# 3. Réécriture interne : pour une URL du type /nom/x, servir control/nom.php?id=x
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/([^/]+)/?$ control/$1.php?id=$2 [L,QSA]
+
+# 4. Réécriture interne générale : pour une URL propre /nom, servir control/nom.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ control/$1.php [L]
+
+# 5. Redirection externe : /images/.../nom.extension  -->  /image-nom.extension
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^images/(?:.*/)?([^/]+\.(?:jpg|jpeg|png|gif))$ /image-$1 [R=301,L]
+
+# 6. Réécriture interne : /image-nom.extension  -->  /images/nom.extension
+RewriteRule ^image-([^/]+\.(?:jpg|jpeg|png|gif))$ /images/$1 [L]

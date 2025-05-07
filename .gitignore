@@ -1,0 +1,7 @@
+# Fichier avec le nom des élèves
+.env.authors
+
+#Fichier avec les variables d'environnement
+.env
+
+images/ads
